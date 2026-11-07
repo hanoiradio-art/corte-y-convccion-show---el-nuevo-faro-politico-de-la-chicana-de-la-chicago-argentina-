@@ -1,0 +1,123 @@
+@import "tailwindcss";
+
+@layer utilities {
+  .font-graffiti {
+    font-family: 'Sedgwick Ave Display', cursive, sans-serif;
+  }
+  .font-marker {
+    font-family: 'Permanent Marker', cursive, sans-serif;
+  }
+  .font-glitch {
+    font-family: 'Rubik Glitch', cursive, sans-serif;
+  }
+  .font-bebas {
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 0.04em;
+  }
+  .font-mono-tech {
+    font-family: 'Share Tech Mono', monospace;
+  }
+  .font-typewriter {
+    font-family: 'Special Elite', cursive, monospace;
+  }
+
+  /* Industrial metal diamond tread pattern */
+  .bg-metal-diamond {
+    background-color: #121214;
+    background-image: radial-gradient(#27272a 15%, transparent 16%), radial-gradient(#27272a 15%, transparent 16%);
+    background-size: 16px 16px;
+    background-position: 0 0, 8px 8px;
+  }
+
+  /* Deepest pure black speaker grille & background */
+  .bg-pitch-black {
+    background-color: #000000;
+  }
+
+  .bg-speaker-grille {
+    background-color: #000000;
+    background-image: 
+      radial-gradient(circle at 50% 50%, rgba(34, 197, 94, 0.05) 1px, transparent 1.5px),
+      radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.03) 1px, transparent 1.5px);
+    background-size: 8px 8px, 16px 16px;
+  }
+
+  /* Distressed tape sticker */
+  .grunge-tape-green {
+    background-color: #22c55e;
+    color: #000000;
+    box-shadow: 0 2px 8px rgba(34, 197, 94, 0.4);
+    transform: rotate(-1.5deg);
+  }
+
+  .grunge-tape-violet {
+    background-color: #a855f7;
+    color: #000000;
+    box-shadow: 0 2px 8px rgba(168, 85, 247, 0.4);
+    transform: rotate(1deg);
+  }
+
+  /* Neon glowing text shadows strictly in green, violet, red hierarchy */
+  .spray-shadow-green {
+    text-shadow: 0 0 14px rgba(34, 197, 94, 0.7), 0 0 28px rgba(34, 197, 94, 0.35);
+  }
+  
+  .spray-shadow-violet {
+    text-shadow: 0 0 14px rgba(168, 85, 247, 0.7), 0 0 28px rgba(168, 85, 247, 0.35);
+  }
+
+  .spray-shadow-red {
+    text-shadow: 0 0 14px rgba(239, 68, 68, 0.7), 0 0 28px rgba(239, 68, 68, 0.35);
+  }
+
+  /* Neon pulse effect for audio visualizer bar */
+  .shadow-neon-green {
+    box-shadow: 0 0 12px rgba(34, 197, 94, 0.75), 0 0 24px rgba(34, 197, 94, 0.35);
+  }
+}
+
+@keyframes neon-pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 8px rgba(34, 197, 94, 0.55), 0 0 18px rgba(34, 197, 94, 0.25);
+    opacity: 0.85;
+  }
+  50% {
+    box-shadow: 0 0 16px rgba(74, 222, 128, 0.95), 0 0 30px rgba(34, 197, 94, 0.6);
+    opacity: 1;
+  }
+}
+
+@keyframes neon-bar-pulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 4px rgba(34, 197, 94, 0.7)) drop-shadow(0 0 10px rgba(34, 197, 94, 0.3));
+    transform: scaleY(0.92);
+  }
+  50% {
+    filter: drop-shadow(0 0 8px rgba(74, 222, 128, 1)) drop-shadow(0 0 18px rgba(34, 197, 94, 0.75));
+    transform: scaleY(1.05);
+  }
+}
+
+.animate-neon-pulse {
+  animation: neon-pulse-glow 1.8s ease-in-out infinite;
+}
+
+.animate-neon-bar-pulse {
+  animation: neon-bar-pulse 1.2s ease-in-out infinite;
+}
+
+/* Custom industrial pure-black scrollbar with green thumb */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: #000000;
+}
+::-webkit-scrollbar-thumb {
+  background: #15803d;
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #22c55e;
+}

@@ -1,0 +1,95 @@
+[
+  {
+    "id": "ev-1794020837037",
+    "title": "Noche de Fuzz en Floyd",
+    "bands": [
+      "Banda Under"
+    ],
+    "venue": "Floyd Rock Club",
+    "address": "Pellegrini 1662",
+    "date": "Viernes 14 Nov",
+    "time": "22:30 hs",
+    "price": "$4.000",
+    "genre": "Rock Under",
+    "description": "Fecha autogestionada independiente.",
+    "flyerUrl": "/src/assets/images/flyer_floyd_rosario_1789613703388.jpg",
+    "ticketLink": "",
+    "contact": "",
+    "featured": false,
+    "communitySubmitted": true
+  },
+  {
+    "id": "ev-1794020031682",
+    "title": "LA RENGA",
+    "bands": [
+      "LA RENGA"
+    ],
+    "venue": "Otro Lugar Under",
+    "address": "POLIDEPORTIVO MUNICIPAL - NECOCHEA",
+    "date": "SABADO 30 ENERO 2027",
+    "time": "21:00 hs",
+    "price": "Entrada en puerta",
+    "genre": "Rock Under",
+    "description": "Flyer oficial de la fecha independiente en Rosario.",
+    "flyerUrl": "/uploads/flyer_ev-1794020031682.jpg",
+    "ticketLink": "",
+    "contact": "",
+    "featured": false,
+    "communitySubmitted": true
+  },
+  {
+    "id": "ev-1792170896306",
+    "title": "LA RENGA olideportivo municipal",
+    "bands": [
+      "LA RENGA olideportivo municipal"
+    ],
+    "venue": "Otro Lugar Under",
+    "address": "Rosario",
+    "date": "sab 30 enero 27",
+    "time": "22:00 hs",
+    "price": "A consultar en puerta",
+    "genre": "Rock Under",
+    "description": "Flyer oficial de la fecha independiente en Rosario.",
+    "flyerUrl": "/uploads/flyer_ev-1792170896306.jpg",
+    "ticketLink": "",
+    "contact": "",
+    "featured": false,
+    "communitySubmitted": true
+  },
+  {
+    "id": "ev-1792170163418",
+    "title": "festival del blues hecho por el programa @bluesmundano...",
+    "bands": [
+      "festival del blues hecho por el programa @bluesmundano..."
+    ],
+    "venue": "Otro Lugar Under",
+    "address": "Rosario",
+    "date": "sabado 24 oktubre Club Sarmiento 4642",
+    "time": "22:00 hs",
+    "price": "A consultar en puerta",
+    "genre": "Rock Under",
+    "description": "Flyer oficial de la fecha independiente en Rosario.",
+    "flyerUrl": "/uploads/flyer_ev-1792170163418.jpg",
+    "ticketLink": "",
+    "contact": "",
+    "featured": false,
+    "communitySubmitted": true
+  },
+  {
+    "id": "ev-3",
+    "title": "Ciclo Ruido en el Galpón",
+    "bands": [
+      "Duna Negra",
+      "Paraná Noise Project"
+    ],
+    "venue": "Galpón de la Música",
+    "address": "Estévez Boero 980 (Franja del Río)",
+    "date": "Domingo 28 de Septiembre",
+    "time": "19:00 hs",
+    "price": "Entrada Libre y Gratuita",
+    "genre": "Indie Rock / Post-Punk",
+    "description": "Ciclo frente al río Paraná con vista al atardecer y feria de fanzines independientes.",
+    "flyerUrl": "/src/assets/images/flyer_galpon_rosario_1789613729512.jpg",
+    "featured": false
+  }
+]

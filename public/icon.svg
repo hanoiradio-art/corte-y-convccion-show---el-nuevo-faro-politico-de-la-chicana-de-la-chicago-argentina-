@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <radialGradient id="vinylGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#27272a"/>
+      <stop offset="40%" stop-color="#18181b"/>
+      <stop offset="80%" stop-color="#09090b"/>
+      <stop offset="100%" stop-color="#000000"/>
+    </radialGradient>
+    <linearGradient id="neonEmerald" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34d399"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+    <linearGradient id="neonPurple" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#c084fc"/>
+      <stop offset="100%" stop-color="#7c3aed"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Dark background -->
+  <rect width="512" height="512" rx="100" fill="#09090b"/>
+
+  <!-- Outer Speaker Grille / Vinyl Edge -->
+  <circle cx="256" cy="256" r="215" fill="none" stroke="url(#neonEmerald)" stroke-width="8" stroke-dasharray="10 5" opacity="0.8"/>
+  <circle cx="256" cy="256" r="200" fill="url(#vinylGrad)" stroke="#27272a" stroke-width="4"/>
+
+  <!-- Vinyl Grooves -->
+  <circle cx="256" cy="256" r="175" fill="none" stroke="#27272a" stroke-width="1.5" opacity="0.6"/>
+  <circle cx="256" cy="256" r="150" fill="none" stroke="#27272a" stroke-width="1.5" opacity="0.6"/>
+  <circle cx="256" cy="256" r="125" fill="none" stroke="#27272a" stroke-width="1.5" opacity="0.6"/>
+
+  <!-- Center Label -->
+  <circle cx="256" cy="256" r="95" fill="#10b981" stroke="url(#neonPurple)" stroke-width="6"/>
+
+  <!-- Center Spindle -->
+  <circle cx="256" cy="256" r="22" fill="#000000"/>
+  <circle cx="256" cy="256" r="12" fill="#34d399"/>
+
+  <!-- Rock Lightning Bolt -->
+  <polygon points="266,180 236,250 262,250 246,310 286,235 260,235" fill="#facc15" stroke="#ca8a04" stroke-width="2"/>
+
+  <!-- Slogan curved or bottom text -->
+  <text x="256" y="445" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="900" fill="#34d399" text-anchor="middle" letter-spacing="4">HANOI RADIO</text>
+  <text x="256" y="475" font-family="monospace" font-size="16" font-weight="bold" fill="#a855f7" text-anchor="middle" letter-spacing="2">ROSARIO UNDER</text>
+</svg>

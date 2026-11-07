@@ -1,0 +1,6 @@
+{
+  "name": "Hanoi Radio - Rock & Under Rosario",
+  "description": "Radio online de rock & roll y música under de Rosario, Argentina. Transmisión en vivo, chat de la comunidad y agenda de recitales independientes.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
