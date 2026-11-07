@@ -66,8 +66,10 @@ export const CommunityChat: React.FC<CommunityChatProps> = ({ onlineCount, onOpe
   useEffect(() => {
     let ws: WebSocket | null = null;
     let reconnectTimeout: NodeJS.Timeout;
+    let isMounted = true;
 
     const connectWs = () => {
+      if (!isMounted) return;
       try {
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
         const wsUrl = `${protocol}//${window.location.host}/ws`;
@@ -75,10 +77,11 @@ export const CommunityChat: React.FC<CommunityChatProps> = ({ onlineCount, onOpe
         socketRef.current = ws;
 
         ws.onopen = () => {
-          setIsConnected(true);
+          if (isMounted) setIsConnected(true);
         };
 
         ws.onmessage = (event) => {
+          if (!isMounted) return;
           try {
             const msg = JSON.parse(event.data);
             if (msg.type === 'init') {
@@ -106,36 +109,45 @@ export const CommunityChat: React.FC<CommunityChatProps> = ({ onlineCount, onOpe
                 })
               );
             }
-          } catch (e) {
-            console.error('Error handling WS event:', e);
+          } catch {
+            // ignore
           }
         };
 
         ws.onclose = () => {
-          setIsConnected(false);
-          reconnectTimeout = setTimeout(connectWs, 4000);
+          if (isMounted) {
+            setIsConnected(false);
+            reconnectTimeout = setTimeout(connectWs, 8000);
+          }
         };
 
         ws.onerror = () => {
-          setIsConnected(false);
+          if (isMounted) {
+            setIsConnected(false);
+          }
         };
-      } catch (err) {
-        console.warn('WS fallback to REST:', err);
+      } catch {
+        // silent fallback to REST
       }
     };
 
     fetch('/api/chat/messages')
       .then((res) => res.json())
       .then((data) => {
-        if (Array.isArray(data)) setMessages(data);
+        if (isMounted && Array.isArray(data)) setMessages(data);
       })
-      .catch((err) => console.warn('REST fallback:', err));
+      .catch(() => {});
 
     connectWs();
 
     return () => {
+      isMounted = false;
       if (reconnectTimeout) clearTimeout(reconnectTimeout);
-      if (ws) ws.close();
+      if (ws) {
+        ws.onclose = null;
+        ws.onerror = null;
+        ws.close();
+      }
     };
   }, []);
 

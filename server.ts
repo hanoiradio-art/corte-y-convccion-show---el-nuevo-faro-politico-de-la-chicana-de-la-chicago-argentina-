@@ -751,8 +751,8 @@ let connectedClientsCount = 0;
 
 server.on('upgrade', (request, socket, head) => {
   const reqUrl = request.url || '';
-  // Route app websocket connections while leaving vite/other upgrades unblocked
-  if (reqUrl.startsWith('/ws') || reqUrl === '/') {
+  // Only route app websocket connections on /ws, never intercept root / or Vite HMR
+  if (reqUrl.startsWith('/ws')) {
     wss.handleUpgrade(request, socket, head, (ws) => {
       wss.emit('connection', ws, request);
     });
@@ -847,8 +847,12 @@ wss.on('connection', (ws) => {
 // Vite middleware for development or static files for production
 async function startServer() {
   if (process.env.NODE_ENV !== 'production') {
+    const isHmrDisabled = process.env.DISABLE_HMR === 'true';
     const vite = await createViteServer({
-      server: { middlewareMode: true },
+      server: {
+        middlewareMode: true,
+        hmr: isHmrDisabled ? false : { server }
+      },
       appType: 'spa'
     });
     app.use(vite.middlewares);

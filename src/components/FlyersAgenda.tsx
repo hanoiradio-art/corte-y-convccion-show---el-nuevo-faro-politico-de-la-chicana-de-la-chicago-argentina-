@@ -192,7 +192,11 @@ export const FlyersAgenda: React.FC<FlyersAgendaProps> = ({
 
     return () => {
       clearInterval(pollInterval);
-      if (ws) ws.close();
+      if (ws) {
+        ws.onmessage = null;
+        ws.onerror = null;
+        ws.close();
+      }
     };
   }, []);
 
