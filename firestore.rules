@@ -1,0 +1,32 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper validation
+    function isValidSubscriber(data) {
+      return data.keys().hasAll(['token', 'subscribedAt']) &&
+             data.token is string && data.token.size() > 0 && data.token.size() < 4096 &&
+             data.subscribedAt is string && data.subscribedAt.size() < 100;
+    }
+
+    function isValidAnnouncement(data) {
+      return data.keys().hasAll(['title', 'body', 'timestamp']) &&
+             data.title is string && data.title.size() > 0 && data.title.size() <= 200 &&
+             data.body is string && data.body.size() > 0 && data.body.size() <= 1000 &&
+             data.timestamp is string;
+    }
+
+    // Subscribers collection: listeners can register their device push token
+    match /notification_subscribers/{subscriberId} {
+      allow read: if true;
+      allow create, update: if isValidSubscriber(request.resource.data);
+      allow delete: if true;
+    }
+
+    // Live announcements collection: listeners can read alerts in real time
+    match /live_announcements/{announcementId} {
+      allow read: if true;
+      allow create, update: if isValidAnnouncement(request.resource.data);
+      allow delete: if true;
+    }
+  }
+}

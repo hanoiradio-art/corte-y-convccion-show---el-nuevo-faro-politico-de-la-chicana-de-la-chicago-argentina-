@@ -1,13 +1,16 @@
 import React from 'react';
-import { Radio, Flame, Share2, Disc3, Sparkles, Image, MessageSquare, ShieldCheck, Lock, Smartphone } from 'lucide-react';
+import { Radio, Flame, Share2, Disc3, Sparkles, Image, MessageSquare, ShieldCheck, Lock, Smartphone, Bell, BellRing } from 'lucide-react';
 
 interface HeaderProps {
   isPlaying: boolean;
   onlineListeners: number;
   onShare: () => void;
-  onOpenDeveloperModal: (tab?: 'ai' | 'station' | 'flyers' | 'playstore') => void;
+  onOpenDeveloperModal: (tab?: 'ai' | 'station' | 'flyers' | 'playstore' | 'seo') => void;
   isDeveloperMode: boolean;
   onToggleDeveloperMode?: () => void;
+  isPushSubscribed?: boolean;
+  onTogglePush?: () => void;
+  onOpenInstallModal?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -15,7 +18,10 @@ export const Header: React.FC<HeaderProps> = ({
   onlineListeners,
   onShare,
   onOpenDeveloperModal,
-  isDeveloperMode
+  isDeveloperMode,
+  isPushSubscribed,
+  onTogglePush,
+  onOpenInstallModal
 }) => {
   const scrollTo = (id: string) => {
     const el = document.getElementById(id);
@@ -80,12 +86,18 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
 
           <button
-            onClick={() => onOpenDeveloperModal('playstore')}
+            onClick={() => {
+              if (onOpenInstallModal) {
+                onOpenInstallModal();
+              } else {
+                onOpenDeveloperModal('playstore');
+              }
+            }}
             className="flex items-center gap-1 px-2 sm:px-2.5 py-1.5 text-xs font-mono-tech text-emerald-300 hover:text-white bg-emerald-950/30 hover:bg-emerald-900/50 border border-emerald-500/40 rounded-lg transition-colors cursor-pointer"
-            title="App Oficial Play Store & PWA Gratis"
+            title="Instalar App Oficial Hanoi Radio & Google Play Store"
           >
             <Smartphone className="w-3.5 h-3.5 text-emerald-400" />
-            <span className="text-[11px] font-bold hidden sm:inline">Play Store</span>
+            <span className="text-[11px] font-bold">App Oficial</span>
           </button>
 
           {/* Developer Mode Action */}
@@ -108,6 +120,29 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <Lock className="w-3 h-3 text-zinc-400" />
               <span className="text-[10px] hidden md:inline">Director</span>
+            </button>
+          )}
+
+          {/* Push Notifications Bell for Listeners */}
+          {onTogglePush && (
+            <button
+              onClick={onTogglePush}
+              id="btn-header-push-alerts"
+              title={isPushSubscribed ? 'Notificaciones de programas en vivo activadas' : 'Activar avisos cuando empiece un programa en vivo'}
+              className={`p-1.5 rounded-lg transition-colors cursor-pointer flex items-center justify-center relative ${
+                isPushSubscribed
+                  ? 'text-emerald-400 bg-emerald-950/40 hover:bg-emerald-900/60 border border-emerald-500/40'
+                  : 'text-zinc-400 hover:text-purple-300 hover:bg-zinc-900'
+              }`}
+            >
+              {isPushSubscribed ? (
+                <>
+                  <BellRing className="w-4 h-4 text-emerald-400 animate-pulse" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 absolute top-1 right-1" />
+                </>
+              ) : (
+                <Bell className="w-4 h-4" />
+              )}
             </button>
           )}
 

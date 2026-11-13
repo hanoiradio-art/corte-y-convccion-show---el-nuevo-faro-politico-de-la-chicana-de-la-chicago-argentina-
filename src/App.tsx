@@ -5,6 +5,9 @@ import { FlyersAgenda } from './components/FlyersAgenda';
 import { CommunityChat } from './components/CommunityChat';
 import { DeveloperControlModal } from './components/DeveloperControlModal';
 import { PWAInstallBanner } from './components/PWAInstallBanner';
+import { AppInstallModal } from './components/AppInstallModal';
+import { PushNotificationPrompt } from './components/PushNotificationPrompt';
+import { usePushNotifications } from './hooks/usePushNotifications';
 import { Footer } from './components/Footer';
 import { RadioShow } from './types';
 import { Check, ShieldCheck, Lock, Unlock, Settings, LogOut } from 'lucide-react';
@@ -30,7 +33,23 @@ export default function App() {
     return localStorage.getItem('hanoi_developer_mode') === 'true';
   });
   const [isDeveloperModalOpen, setIsDeveloperModalOpen] = useState<boolean>(false);
-  const [developerModalTab, setDeveloperModalTab] = useState<'ai' | 'station' | 'flyers' | 'playstore'>('ai');
+  const [developerModalTab, setDeveloperModalTab] = useState<'ai' | 'station' | 'flyers' | 'playstore' | 'seo'>('ai');
+  const [isInstallModalOpen, setIsInstallModalOpen] = useState<boolean>(false);
+
+  // Push Notifications (Firebase Cloud Messaging)
+  const {
+    isSubscribed: isPushSubscribed,
+    isLoading: isPushLoading,
+    activeAlert: pushActiveAlert,
+    enableNotifications,
+    dismissAlert: dismissPushAlert
+  } = usePushNotifications();
+
+  const handleTuneInFromPush = () => {
+    setIsPlaying(true);
+    const playerEl = document.getElementById('reproductor');
+    if (playerEl) playerEl.scrollIntoView({ behavior: 'smooth' });
+  };
 
   // Ref to trigger flyer publication dialog from Developer modal
   const flyerSubmitOpenerRef = useRef<(() => void) | null>(null);
@@ -60,7 +79,7 @@ export default function App() {
     if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const handleOpenDeveloperModal = (tab: 'ai' | 'station' | 'flyers' | 'playstore' = 'ai') => {
+  const handleOpenDeveloperModal = (tab: 'ai' | 'station' | 'flyers' | 'playstore' | 'seo' = 'ai') => {
     setDeveloperModalTab(tab);
     setIsDeveloperModalOpen(true);
   };
@@ -124,7 +143,17 @@ export default function App() {
       )}
 
       {/* PWA Direct Install Banner (Android, PC, iOS) */}
-      <PWAInstallBanner />
+      <PWAInstallBanner onOpenInstallModal={() => setIsInstallModalOpen(true)} />
+
+      {/* Push Notification Live Alerts & Prompt (Firebase Cloud Messaging) */}
+      <PushNotificationPrompt
+        alert={pushActiveAlert}
+        onDismiss={dismissPushAlert}
+        onTuneIn={handleTuneInFromPush}
+        isSubscribed={isPushSubscribed}
+        onEnable={enableNotifications}
+        isLoading={isPushLoading}
+      />
 
       {/* Header */}
       <Header
@@ -132,7 +161,10 @@ export default function App() {
         onlineListeners={onlineListeners}
         onShare={handleShare}
         onOpenDeveloperModal={handleOpenDeveloperModal}
+        onOpenInstallModal={() => setIsInstallModalOpen(true)}
         isDeveloperMode={isDeveloperMode}
+        isPushSubscribed={isPushSubscribed}
+        onTogglePush={enableNotifications}
       />
 
       {/* Copy link notification alert */}
@@ -198,10 +230,17 @@ export default function App() {
           }
         }}
         initialTab={developerModalTab}
+        onOpenInstallModal={() => setIsInstallModalOpen(true)}
+      />
+
+      {/* Official App Installation Modal (Android, iOS Safari, Desktop, Play Store APK) */}
+      <AppInstallModal
+        isOpen={isInstallModalOpen}
+        onClose={() => setIsInstallModalOpen(false)}
       />
 
       {/* Footer */}
-      <Footer />
+      <Footer onOpenInstallModal={() => setIsInstallModalOpen(true)} />
     </div>
   );
 }

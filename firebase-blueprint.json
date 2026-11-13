@@ -1,0 +1,78 @@
+{
+  "entities": {
+    "NotificationSubscriber": {
+      "title": "NotificationSubscriber",
+      "description": "Oyente suscrito a notificaciones push de programas en vivo de Hanoi Radio",
+      "type": "object",
+      "properties": {
+        "token": {
+          "type": "string",
+          "description": "FCM device registration token"
+        },
+        "platform": {
+          "type": "string",
+          "description": "Navegador o plataforma del oyente (Android, iOS, Web)"
+        },
+        "subscribedAt": {
+          "type": "string",
+          "description": "Marca de tiempo ISO en la que se activaron las notificaciones"
+        },
+        "notifyLiveShows": {
+          "type": "boolean",
+          "description": "Si el oyente desea recibir alertas de inicio de programas en vivo"
+        }
+      },
+      "required": ["token", "subscribedAt"]
+    },
+    "LiveAnnouncement": {
+      "title": "LiveAnnouncement",
+      "description": "Aviso emitido por la producción al comenzar un nuevo programa o anuncio especial",
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Título del aviso push"
+        },
+        "body": {
+          "type": "string",
+          "description": "Cuerpo o descripción de la notificación"
+        },
+        "showTitle": {
+          "type": "string",
+          "description": "Nombre del programa que inicia"
+        },
+        "showHost": {
+          "type": "string",
+          "description": "Locutores o conductores a cargo"
+        },
+        "genre": {
+          "type": "string",
+          "description": "Estilo musical o género"
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "Hora de emisión del aviso"
+        },
+        "sender": {
+          "type": "string",
+          "description": "Identificador de la estación o director"
+        }
+      },
+      "required": ["title", "body", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/notification_subscribers/{subscriberId}": {
+      "schema": {
+        "$ref": "#/entities/NotificationSubscriber"
+      },
+      "description": "Registro de tokens para envío de notificaciones push a oyentes"
+    },
+    "/live_announcements/{announcementId}": {
+      "schema": {
+        "$ref": "#/entities/LiveAnnouncement"
+      },
+      "description": "Historial de alertas de programas en vivo emitidas por Hanoi Radio"
+    }
+  }
+}

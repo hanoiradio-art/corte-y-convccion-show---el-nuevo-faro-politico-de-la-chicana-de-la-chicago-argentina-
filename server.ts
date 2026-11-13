@@ -19,6 +19,7 @@ if (!fs.existsSync(UPLOADS_DIR)) {
 }
 app.use('/uploads', express.static(UPLOADS_DIR));
 app.use('/src/assets/images', express.static(path.join(process.cwd(), 'src/assets/images')));
+app.use(express.static(path.join(process.cwd(), 'public')));
 
 interface ChatMessageServer {
   id: string;

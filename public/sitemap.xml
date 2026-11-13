@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <url>
+    <loc>https://ais-pre-n2eak3osxbsvoulsx7ybbp-453426632868.us-west2.run.app/</loc>
+    <lastmod>2026-11-11</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://ais-pre-n2eak3osxbsvoulsx7ybbp-453426632868.us-west2.run.app/pwa-512x512.png</image:loc>
+      <image:title>Hanoi Radio 98.9 - Rock and Under Rosario</image:title>
+      <image:caption>Transmisión de rock independiente y cartelera de recitales de Rosario, Argentina</image:caption>
+    </image:image>
+  </url>
+</urlset>

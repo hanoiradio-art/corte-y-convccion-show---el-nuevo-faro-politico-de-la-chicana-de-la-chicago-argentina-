@@ -12,10 +12,69 @@
     <meta name="apple-mobile-web-app-title" content="Hanoi Radio" />
     <link rel="icon" type="image/svg+xml" href="/icon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <script>
+      window.__deferredInstallPrompt = null;
+      window.addEventListener('beforeinstallprompt', function (e) {
+        e.preventDefault();
+        window.__deferredInstallPrompt = e;
+        window.dispatchEvent(new CustomEvent('hanoi-pwa-prompt-ready'));
+      });
+    </script>
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="keywords" content="Hanoi Radio, Radio Rosario, Rock Rosario, Música Under Rosario, 98.9, Recitales Rosario, Rock Argentino, Radio en vivo Rosario, Bandas de Rosario, Streaming Rock Under" />
+    <meta name="author" content="Hanoi Radio 98.9" />
     <meta property="og:title" content="Hanoi Radio - Rock & Under Rosario" />
     <meta property="og:description" content="Radio online de rock & roll y música under de Rosario, Argentina. Transmisión en vivo, chat de la comunidad y agenda de recitales independientes." />
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Hanoi Radio 98.9" />
+    <meta property="og:locale" content="es_AR" />
+    <meta property="og:image" content="/pwa-512x512.png" />
+    <meta property="og:image:alt" content="Logo oficial de Hanoi Radio - Rock & Under Rosario" />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Hanoi Radio - Rock & Under Rosario" />
+    <meta name="twitter:description" content="Radio online de rock & roll y música under de Rosario, Argentina. Transmisión en vivo 24/7 y cartelera de recitales." />
+    <meta name="twitter:image" content="/pwa-512x512.png" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "RadioStation",
+          "@id": "https://hanoiradio.com.ar/#station",
+          "name": "Hanoi Radio",
+          "alternateName": "Hanoi Radio 98.9",
+          "description": "Radio independiente de rock and roll, garage, punk, stoner y música under de Rosario, Argentina.",
+          "url": "/",
+          "logo": "/pwa-512x512.png",
+          "image": "/pwa-512x512.png",
+          "email": "hanoiradio.ar@gmail.com",
+          "genre": ["Rock", "Garage Rock", "Punk", "Stoner Rock", "Música Under"],
+          "broadcastChannel": {
+            "@type": "BroadcastChannel",
+            "broadcastChannelId": "98.9",
+            "broadcastServiceTier": "Free"
+          },
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Rosario",
+            "addressRegion": "Santa Fe",
+            "addressCountry": "AR"
+          }
+        },
+        {
+          "@type": "WebApplication",
+          "name": "Hanoi Radio App",
+          "applicationCategory": "MultimediaApplication",
+          "operatingSystem": "Android, iOS, Windows, macOS",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "ARS"
+          }
+        }
+      ]
+    }
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Permanent+Marker&family=Rubik+Glitch&family=Sedgwick+Ave+Display&family=Share+Tech+Mono&family=Special+Elite&display=swap" rel="stylesheet">

@@ -11,7 +11,8 @@ export default defineConfig(() => {
       tailwindcss(),
       VitePWA({
         registerType: 'autoUpdate',
-        includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'icon.svg'],
+        useCredentials: true,
+        includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'icon.svg', 'pwa-192x192.png', 'pwa-512x512.png', 'pwa-maskable-512x512.png'],
         manifest: {
           id: '/',
           name: 'Hanoi Radio - Rock & Under Rosario',
@@ -23,6 +24,8 @@ export default defineConfig(() => {
           orientation: 'portrait',
           start_url: '/',
           scope: '/',
+          lang: 'es',
+          prefer_related_applications: false,
           categories: ['music', 'entertainment', 'news'],
           icons: [
             {
@@ -46,6 +49,10 @@ export default defineConfig(() => {
           ]
         },
         workbox: {
+          skipWaiting: true,
+          clientsClaim: true,
+          cleanupOutdatedCaches: true,
+          navigateFallbackDenylist: [/^\/api\//, /^\/uploads\//, /^\/firebase-messaging-sw\.js$/],
           globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
           runtimeCaching: [
             {

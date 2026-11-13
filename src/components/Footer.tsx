@@ -1,7 +1,11 @@
 import React from 'react';
-import { Mail, Radio, Heart, Disc, Volume2, Shield } from 'lucide-react';
+import { Mail, Radio, Heart, Disc, Volume2, Shield, Smartphone } from 'lucide-react';
 
-export const Footer: React.FC = () => {
+interface FooterProps {
+  onOpenInstallModal?: () => void;
+}
+
+export const Footer: React.FC<FooterProps> = ({ onOpenInstallModal }) => {
   return (
     <footer className="relative border-t border-zinc-900 bg-black mt-8 text-zinc-400 font-mono-tech text-xs overflow-hidden">
       {/* Decorative metallic rivets */}
@@ -23,6 +27,17 @@ export const Footer: React.FC = () => {
             <p className="text-zinc-500 text-xs leading-relaxed">
               Trinchera de difusión del rock independiente, garage, punk, stoner y grunge de Rosario y el litoral argentino.
             </p>
+            {onOpenInstallModal && (
+              <div className="pt-2">
+                <button
+                  onClick={onOpenInstallModal}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-950/60 hover:bg-emerald-900/80 border border-emerald-500/50 text-emerald-300 hover:text-white rounded-lg transition-colors cursor-pointer text-[11px] font-bold"
+                >
+                  <Smartphone className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Instalar App Oficial (Gratis)</span>
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Direct Stream Access & Frequencies */}

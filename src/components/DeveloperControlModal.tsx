@@ -19,9 +19,17 @@ import {
   AlertCircle,
   ExternalLink,
   Flame,
-  Volume2
+  Volume2,
+  Bell,
+  BellRing,
+  Search,
+  Globe,
+  TrendingUp,
+  CheckCircle2,
+  MapPin
 } from 'lucide-react';
 import { AiTrainingConfig, StationConfig, RadioEvent } from '../types';
+import { publishLiveAnnouncement } from '../lib/firebase';
 
 interface DeveloperControlModalProps {
   isOpen: boolean;
@@ -29,7 +37,8 @@ interface DeveloperControlModalProps {
   isDeveloperMode: boolean;
   onUnlockDeveloperMode: () => void;
   onOpenFlyerPublish: () => void;
-  initialTab?: 'ai' | 'station' | 'flyers' | 'playstore';
+  initialTab?: 'ai' | 'station' | 'flyers' | 'playstore' | 'seo';
+  onOpenInstallModal?: () => void;
 }
 
 const HANOI_PUBLISHER_SECRET = 'hanoi-radio-producer-key';
@@ -41,9 +50,10 @@ export const DeveloperControlModal: React.FC<DeveloperControlModalProps> = ({
   isDeveloperMode,
   onUnlockDeveloperMode,
   onOpenFlyerPublish,
-  initialTab = 'ai'
+  initialTab = 'ai',
+  onOpenInstallModal
 }) => {
-  const [activeTab, setActiveTab] = useState<'ai' | 'station' | 'flyers' | 'playstore'>(initialTab);
+  const [activeTab, setActiveTab] = useState<'ai' | 'station' | 'flyers' | 'playstore' | 'seo'>(initialTab);
 
   useEffect(() => {
     if (initialTab) {
@@ -105,6 +115,12 @@ export const DeveloperControlModal: React.FC<DeveloperControlModalProps> = ({
   const [saveSuccessMsg, setSaveSuccessMsg] = useState<string | null>(null);
   const [authPinInput, setAuthPinInput] = useState('');
   const [authError, setAuthError] = useState<string | null>(null);
+
+  // Live Push Notification Broadcast state (Firebase Cloud Messaging)
+  const [customPushTitle, setCustomPushTitle] = useState('');
+  const [customPushBody, setCustomPushBody] = useState('');
+  const [isSendingPush, setIsSendingPush] = useState(false);
+  const [pushSuccessMsg, setPushSuccessMsg] = useState<string | null>(null);
 
   // Fetch initial configs on open
   useEffect(() => {
@@ -259,6 +275,46 @@ export const DeveloperControlModal: React.FC<DeveloperControlModalProps> = ({
       console.error('Error saving station info:', err);
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  // Broadcast Live Show Push Notification to all listeners via Firebase
+  const handleSendLiveShowPush = async (useDefault = false) => {
+    setIsSendingPush(true);
+    setPushSuccessMsg(null);
+    try {
+      const showTitle = stationConfig.currentShow?.title || 'Nuevo Programa';
+      const showHost = stationConfig.currentShow?.host || 'Staff Hanoi';
+      const genre = stationConfig.currentShow?.genre || 'Rock Under';
+
+      const title = useDefault || !customPushTitle.trim()
+        ? `🔴 ¡En Vivo: ${showTitle}!`
+        : customPushTitle.trim();
+
+      const body = useDefault || !customPushBody.trim()
+        ? `¡Arrancó ${showTitle} con ${showHost} (${genre})! Sintonizá ahora Hanoi Radio 98.9.`
+        : customPushBody.trim();
+
+      const success = await publishLiveAnnouncement({
+        title,
+        body,
+        showTitle,
+        showHost,
+        genre
+      });
+
+      if (success) {
+        setPushSuccessMsg('¡Notificación push emitida exitosamente a todos los oyentes!');
+        setCustomPushTitle('');
+        setCustomPushBody('');
+        setTimeout(() => setPushSuccessMsg(null), 4000);
+      } else {
+        alert('Error al emitir notificación push. Verificá la conexión con Firebase.');
+      }
+    } catch (err) {
+      console.error('Error sending push alert:', err);
+    } finally {
+      setIsSendingPush(false);
     }
   };
 
@@ -453,6 +509,18 @@ Tu misión es recomendar recitales, analizar los solos de guitarra y arengar a l
               >
                 <Smartphone className="w-3.5 h-3.5 text-emerald-400" />
                 <span>📲 Play Store & App Oficial</span>
+              </button>
+
+              <button
+                onClick={() => setActiveTab('seo')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-mono-tech text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+                  activeTab === 'seo'
+                    ? 'bg-blue-600 text-white shadow-[0_0_15px_rgba(59,130,246,0.4)]'
+                    : 'bg-zinc-950 text-zinc-400 hover:text-white border border-zinc-900'
+                }`}
+              >
+                <Search className="w-3.5 h-3.5 text-blue-400" />
+                <span>🚀 Posicionamiento Google (SEO)</span>
               </button>
             </div>
 
@@ -892,6 +960,88 @@ Tu misión es recomendar recitales, analizar los solos de guitarra y arengar a l
                     />
                   </div>
 
+                  {/* FIREBASE CLOUD MESSAGING (FCM) PUSH NOTIFICATION BROADCASTER */}
+                  <div className="p-4 bg-zinc-950 rounded-2xl border border-purple-500/50 space-y-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-xl bg-purple-950/60 border border-purple-500/40 flex items-center justify-center text-purple-400">
+                          <BellRing className="w-4 h-4 animate-bounce" />
+                        </div>
+                        <div>
+                          <h5 className="font-bebas text-lg text-white tracking-wide">
+                            NOTIFICACIONES PUSH A OYENTES (FIREBASE CLOUD MESSAGING)
+                          </h5>
+                          <p className="font-mono-tech text-[11px] text-zinc-400">
+                            Avisá en la pantalla de los oyentes cuando comience un nuevo programa en vivo.
+                          </p>
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => handleSendLiveShowPush(true)}
+                        disabled={isSendingPush}
+                        className="px-3.5 py-1.5 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-black font-bold font-mono-tech text-xs rounded-xl shadow-lg transition-all flex items-center gap-1.5 cursor-pointer uppercase tracking-wider shrink-0"
+                      >
+                        <Bell className="w-3.5 h-3.5" />
+                        <span>{isSendingPush ? 'Enviando...' : 'Avisar: ¡Comenzó el Programa!'}</span>
+                      </button>
+                    </div>
+
+                    {/* Custom Push Notification Fields */}
+                    <div className="space-y-2 pt-2 border-t border-zinc-900">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <div>
+                          <label className="block text-[10px] font-mono-tech text-zinc-400 mb-1">
+                            Título personalizado de la alerta:
+                          </label>
+                          <input
+                            type="text"
+                            value={customPushTitle}
+                            onChange={(e) => setCustomPushTitle(e.target.value)}
+                            placeholder={`Ej: 🔴 ¡En Vivo: ${stationConfig.currentShow?.title || 'Trinchera Under'}!`}
+                            className="w-full px-2.5 py-1.5 bg-black border border-zinc-800 rounded-lg text-xs font-mono-tech text-white focus:outline-none focus:border-purple-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-mono-tech text-zinc-400 mb-1">
+                            Mensaje o detalle del programa:
+                          </label>
+                          <input
+                            type="text"
+                            value={customPushBody}
+                            onChange={(e) => setCustomPushBody(e.target.value)}
+                            placeholder="Ej: ¡Especial con entrevistas a bandas under en vivo! Sintonizá ahora."
+                            className="w-full px-2.5 py-1.5 bg-black border border-zinc-800 rounded-lg text-xs font-mono-tech text-white focus:outline-none focus:border-purple-500"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between gap-2 pt-1">
+                        <span className="text-[10px] font-mono-tech text-zinc-500">
+                          ⚡ Envía alertas a dispositivos Android, iOS y computadoras suscritas.
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleSendLiveShowPush(false)}
+                          disabled={isSendingPush || (!customPushTitle.trim() && !customPushBody.trim())}
+                          className="px-3 py-1 bg-purple-600 hover:bg-purple-500 disabled:opacity-40 text-white font-mono-tech text-xs font-bold rounded-lg transition-colors cursor-pointer flex items-center gap-1 shrink-0"
+                        >
+                          <Send className="w-3 h-3" />
+                          <span>Enviar Personalizado</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Success Message */}
+                    {pushSuccessMsg && (
+                      <div className="p-2.5 bg-emerald-950/80 border border-emerald-500/70 rounded-xl flex items-center gap-2 text-emerald-300 font-mono-tech text-xs animate-fadeIn">
+                        <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+                        <span>{pushSuccessMsg}</span>
+                      </div>
+                    )}
+                  </div>
+
                   <div className="flex justify-end pt-2">
                     <button
                       type="button"
@@ -1002,6 +1152,19 @@ Tu misión es recomendar recitales, analizar los solos de guitarra y arengar a l
                       <div className="p-2.5 bg-black rounded-xl border border-zinc-800 font-mono-tech text-[11px] text-emerald-400">
                         ✓ Ya activo y funcionando en tu radio con icono oficial 512x512 y Service Worker.
                       </div>
+                      {onOpenInstallModal && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            onClose();
+                            onOpenInstallModal();
+                          }}
+                          className="w-full py-2 bg-emerald-500 hover:bg-emerald-400 text-black font-bold font-mono-tech text-xs rounded-xl shadow transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                        >
+                          <Smartphone className="w-3.5 h-3.5" />
+                          <span>Abrir ventana de instalación de la App</span>
+                        </button>
+                      )}
                     </div>
 
                     {/* Method 2: Google Play Store Publication */}
@@ -1053,6 +1216,239 @@ Tu misión es recomendar recitales, analizar los solos de guitarra y arengar a l
                         </span>
                       </li>
                     </ol>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 5: POSICIONAMIENTO EN GOOGLE (SEO) & VISIBILIDAD */}
+              {activeTab === 'seo' && (
+                <div className="space-y-6">
+                  {/* Hero Intro */}
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <Search className="w-5 h-5 text-blue-400" />
+                      <h4 className="font-bebas text-2xl text-white tracking-wide">
+                        CÓMO APARECER EN LOS PRIMEROS RESULTADOS DE GOOGLE
+                      </h4>
+                    </div>
+                    <p className="font-mono-tech text-xs text-zinc-300">
+                      Guía integral y estado técnico del posicionamiento SEO para que oyentes encuentren a <strong>Hanoi Radio</strong> buscando rock, recitales y música under de Rosario.
+                    </p>
+                  </div>
+
+                  {/* Live Technical SEO Health */}
+                  <div className="p-4 bg-zinc-950 rounded-2xl border border-blue-500/40 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <h5 className="font-bebas text-lg text-white flex items-center gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                        <span>ESTADO TÉCNICO EN EL CÓDIGO (100% IMPLEMENTADO)</span>
+                      </h5>
+                      <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 rounded-full font-mono-tech text-[10px] font-bold">
+                        OPTIMIZADO PARA GOOGLE
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 font-mono-tech text-xs">
+                      <div className="p-2.5 bg-black/80 rounded-xl border border-zinc-800 space-y-1">
+                        <div className="flex items-center gap-1.5 text-emerald-400 font-bold">
+                          <Check className="w-3.5 h-3.5" />
+                          <span>Schema.org RadioStation JSON-LD</span>
+                        </div>
+                        <p className="text-zinc-400 text-[11px]">
+                          Estructura de datos oficial de Google configurada con nombre, logo 512x512, dial 98.9 y ubicación en Rosario, Santa Fe.
+                        </p>
+                      </div>
+
+                      <div className="p-2.5 bg-black/80 rounded-xl border border-zinc-800 space-y-1">
+                        <div className="flex items-center gap-1.5 text-emerald-400 font-bold">
+                          <Check className="w-3.5 h-3.5" />
+                          <span>Archivos Robots.txt & Sitemap.xml</span>
+                        </div>
+                        <p className="text-zinc-400 text-[11px]">
+                          Listos en <code>/robots.txt</code> y <code>/sitemap.xml</code> para guiar a los rastreadores de Googlebot día a día.
+                        </p>
+                      </div>
+
+                      <div className="p-2.5 bg-black/80 rounded-xl border border-zinc-800 space-y-1">
+                        <div className="flex items-center gap-1.5 text-emerald-400 font-bold">
+                          <Check className="w-3.5 h-3.5" />
+                          <span>Palabras clave del Under Rosarino</span>
+                        </div>
+                        <p className="text-zinc-400 text-[11px]">
+                          Keywords indexadas: <em>"Hanoi Radio"</em>, <em>"Radio Rosario"</em>, <em>"Rock Rosario"</em>, <em>"Música Under"</em>, <em>"Recitales Rosario"</em>.
+                        </p>
+                      </div>
+
+                      <div className="p-2.5 bg-black/80 rounded-xl border border-zinc-800 space-y-1">
+                        <div className="flex items-center gap-1.5 text-emerald-400 font-bold">
+                          <Check className="w-3.5 h-3.5" />
+                          <span>OpenGraph & Redes Sociales</span>
+                        </div>
+                        <p className="text-zinc-400 text-[11px]">
+                          Al compartir la web por WhatsApp o redes, genera la tarjeta visual oficial con imagen HD y descripción del rock santafesino.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Action Steps for the Director */}
+                  <div className="space-y-4">
+                    <h5 className="font-bebas text-xl text-white">
+                      LOS 4 PASOS IMPRESCINDIBLES PARA SUBIR AL TOQUE EN GOOGLE:
+                    </h5>
+
+                    {/* Step 1: Google Search Console */}
+                    <div className="p-4 bg-zinc-950 rounded-2xl border border-zinc-800 space-y-2.5">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold text-xs font-mono-tech">
+                            1
+                          </span>
+                          <h6 className="font-bebas text-lg text-white">
+                            DAR DE ALTA EN GOOGLE SEARCH CONSOLE (GRATIS)
+                          </h6>
+                        </div>
+                        <a
+                          href="https://search.google.com/search-console"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-2.5 py-1 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg text-[11px] font-mono-tech flex items-center gap-1 transition-colors"
+                        >
+                          <span>Abrir Search Console</span>
+                          <ExternalLink className="w-3 h-3" />
+                        </a>
+                      </div>
+                      <p className="font-mono-tech text-xs text-zinc-300 leading-relaxed">
+                        Es el panel oficial donde le avisás a Google directamente que tu página existe para que la indexe sin demoras:
+                      </p>
+                      <ol className="list-decimal list-inside space-y-1 font-mono-tech text-xs text-zinc-400">
+                        <li>Ingresá a <strong className="text-white">Google Search Console</strong> con tu cuenta oficial ({HANOI_PUBLISHER_EMAIL}).</li>
+                        <li>Pegá la dirección web de Hanoi Radio.</li>
+                        <li>Andá a la pestaña <strong className="text-white">"Sitemaps"</strong> e ingresá: <code className="text-emerald-400">{window.location.origin}/sitemap.xml</code>.</li>
+                        <li>Hacé clic en <em>"Enviar"</em>. En 24 a 48 hs Google comenzará a mostrar tu radio en los resultados de búsqueda.</li>
+                      </ol>
+                    </div>
+
+                    {/* Step 2: Google Mi Negocio (Google Maps) */}
+                    <div className="p-4 bg-zinc-950 rounded-2xl border border-zinc-800 space-y-2.5">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-xs font-mono-tech">
+                            2
+                          </span>
+                          <h6 className="font-bebas text-lg text-white">
+                            CREAR FICHA EN GOOGLE BUSINESS PROFILE (GOOGLE MAPS ROSARIO)
+                          </h6>
+                        </div>
+                        <a
+                          href="https://business.google.com"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-[11px] font-mono-tech flex items-center gap-1 transition-colors"
+                        >
+                          <span>Google Negocios</span>
+                          <ExternalLink className="w-3 h-3" />
+                        </a>
+                      </div>
+                      <p className="font-mono-tech text-xs text-zinc-300 leading-relaxed">
+                        Es el secreto número 1 para radios locales. Cuando alguien en Rosario busca <em>"radio rosario"</em> o <em>"radio rock"</em>, Google muestra primero las fichas de negocios con mapa:
+                      </p>
+                      <ul className="list-disc list-inside space-y-1 font-mono-tech text-xs text-zinc-400">
+                        <li>Nombre: <strong>Hanoi Radio 98.9 - Rock & Under Rosario</strong>.</li>
+                        <li>Categoría: <strong>Emisora de radio</strong> / <strong>Estación de radio</strong>.</li>
+                        <li>Ubicación: <strong>Rosario, Santa Fe</strong>.</li>
+                        <li>Enlace al sitio web: El link de tu app para que la gente entre y escuche con 1 clic.</li>
+                      </ul>
+                    </div>
+
+                    {/* Step 3: Directorios Mundiales de Radio (Backlinks de Autoridad) */}
+                    <div className="p-4 bg-zinc-950 rounded-2xl border border-zinc-800 space-y-3">
+                      <div className="flex items-center gap-2">
+                        <span className="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold text-xs font-mono-tech">
+                          3
+                        </span>
+                        <h6 className="font-bebas text-lg text-white">
+                          REGISTRAR EL STREAM EN DIRECTORIOS GLOBALES DE RADIO (BACKLINKS)
+                        </h6>
+                      </div>
+                      <p className="font-mono-tech text-xs text-zinc-300 leading-relaxed">
+                        Google le da más autoridad a los sitios que son enlazados por otras webs de música reconocidas. Dar de alta la radio en estos directorios gratuitos impulsa tu posición al instante:
+                      </p>
+                      
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 font-mono-tech text-xs">
+                        <a
+                          href="https://radio.garden/submit"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-3 bg-black hover:bg-zinc-900 border border-zinc-800 hover:border-emerald-500/50 rounded-xl transition-all flex items-center justify-between group"
+                        >
+                          <div>
+                            <p className="font-bold text-white group-hover:text-emerald-400">Radio Garden</p>
+                            <p className="text-[10px] text-zinc-500">El globo terráqueo de radios online más famoso del mundo.</p>
+                          </div>
+                          <ExternalLink className="w-4 h-4 text-zinc-500 group-hover:text-emerald-400 shrink-0" />
+                        </a>
+
+                        <a
+                          href="https://streema.com/radios/request/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-3 bg-black hover:bg-zinc-900 border border-zinc-800 hover:border-purple-500/50 rounded-xl transition-all flex items-center justify-between group"
+                        >
+                          <div>
+                            <p className="font-bold text-white group-hover:text-purple-400">Streema / Simple Radio</p>
+                            <p className="text-[10px] text-zinc-500">Directorio móvil masivo en Argentina y Latinoamérica.</p>
+                          </div>
+                          <ExternalLink className="w-4 h-4 text-zinc-500 group-hover:text-purple-400 shrink-0" />
+                        </a>
+
+                        <a
+                          href="https://help.tunein.com/contact/add-station-S19TR700"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-3 bg-black hover:bg-zinc-900 border border-zinc-800 hover:border-blue-500/50 rounded-xl transition-all flex items-center justify-between group"
+                        >
+                          <div>
+                            <p className="font-bold text-white group-hover:text-blue-400">TuneIn Radio</p>
+                            <p className="text-[10px] text-zinc-500">Plataforma compatible con altavoces inteligentes y autos.</p>
+                          </div>
+                          <ExternalLink className="w-4 h-4 text-zinc-500 group-hover:text-blue-400 shrink-0" />
+                        </a>
+
+                        <a
+                          href="https://zeno.fm"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-3 bg-black hover:bg-zinc-900 border border-zinc-800 hover:border-amber-500/50 rounded-xl transition-all flex items-center justify-between group"
+                        >
+                          <div>
+                            <p className="font-bold text-white group-hover:text-amber-400">Zeno Media</p>
+                            <p className="text-[10px] text-zinc-500">Tu servidor de transmisión oficial activo.</p>
+                          </div>
+                          <ExternalLink className="w-4 h-4 text-zinc-500 group-hover:text-amber-400 shrink-0" />
+                        </a>
+                      </div>
+                    </div>
+
+                    {/* Step 4: Redes & Alianzas con Bandas */}
+                    <div className="p-4 bg-zinc-950 rounded-2xl border border-zinc-800 space-y-2.5">
+                      <div className="flex items-center gap-2">
+                        <span className="w-6 h-6 rounded-full bg-red-500/20 text-red-400 flex items-center justify-center font-bold text-xs font-mono-tech">
+                          4
+                        </span>
+                        <h6 className="font-bebas text-lg text-white">
+                          ENLACES EN REDES SOCIALES Y RECITALES (TRÁFICO ORGÁNICO)
+                        </h6>
+                      </div>
+                      <p className="font-mono-tech text-xs text-zinc-300 leading-relaxed">
+                        El algoritmo de Google mide cuánto tráfico genuino recibe una web. Para potenciarlo:
+                      </p>
+                      <ul className="list-disc list-inside space-y-1 font-mono-tech text-xs text-zinc-400">
+                        <li>Colocá el enlace permanente de la radio en la biografía de Instagram y TikTok.</li>
+                        <li>En cada flyer de recital que publiques en la cartelera, pedile a las bandas rosarinas que compartan el enlace de Hanoi Radio en sus historias para que su público escuche sus temas en el stream.</li>
+                        <li>Cada visita nueva le confirma a Google que la emisora es relevante, aumentando el ranking diario de búsqueda.</li>
+                      </ul>
+                    </div>
                   </div>
                 </div>
               )}
